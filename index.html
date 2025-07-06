@@ -3,200 +3,115 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Landen en hun tijden - 7 Segment Klok</title>
+<title>Alle Tijdzones + 7-Segment Klok</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    background: #222;
+    font-family: monospace;
+    background: #111;
     color: #eee;
     padding: 20px;
+  }
+  h1 {
     text-align: center;
   }
-
-  h1 {
-    margin-bottom: 40px;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    max-width: 900px;
+    margin: 0 auto 40px;
   }
-
-  .land {
-    margin-bottom: 40px;
+  th, td {
+    border: 1px solid #555;
+    padding: 4px 10px;
+    font-size: 0.9rem;
   }
-
-  .landnaam {
-    font-size: 24px;
-    margin-bottom: 10px;
+  th {
+    background: #333;
   }
-
-  .klok {
-    display: inline-flex;
-    gap: 6px;
+  tbody tr:nth-child(odd) {
+    background: #222;
   }
-
-  /* Container voor elk cijfer */
-  .cijfer {
-    position: relative;
-    width: 40px;
-    height: 70px;
-  }
-
-  /* De 7 segmenten */
-  .segment {
-    position: absolute;
-    background-color: #222;
-    transition: background-color 0.2s;
-  }
-
-  /* Segmenten vormen */
-  .segment.a { top: 0; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
-  .segment.b { top: 5px; right: 0; width: 8px; height: 28px; border-radius: 4px; }
-  .segment.c { bottom: 5px; right: 0; width: 8px; height: 28px; border-radius: 4px; }
-  .segment.d { bottom: 0; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
-  .segment.e { bottom: 5px; left: 0; width: 8px; height: 28px; border-radius: 4px; }
-  .segment.f { top: 5px; left: 0; width: 8px; height: 28px; border-radius: 4px; }
-  .segment.g { top: 31px; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
-
-  /* AAN: fel rood */
-  .aan {
-    background-color: red;
-    box-shadow: 0 0 10px red;
-  }
-
-  /* Dubbele punt tussen uren en minuten */
-  .dubbelpunt {
-    width: 10px;
-    height: 70px;
-    position: relative;
-  }
-
-  .dubbelpunt span {
-    position: absolute;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    background: red;
-    border-radius: 50%;
-    transform: translateX(-50%);
-    animation: knipperen 1s infinite;
-  }
-
-  .dubbelpunt span.top {
-    top: 20px;
-  }
-
-  .dubbelpunt span.bottom {
-    bottom: 20px;
-  }
-
-  @keyframes knipperen {
-    0%, 50%, 100% { opacity: 1; }
-    25%, 75% { opacity: 0; }
+  .clock {
+    font-size: 4rem;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    margin-bottom: 50px;
   }
 </style>
 </head>
 <body>
 
-<h1>Landen en hun tijden (7-segment stijl)</h1>
+<h1>Alle Tijdzones met Huidige Tijd</h1>
 
-<div id="landenContainer"></div>
+<table>
+  <thead>
+    <tr><th>Tijdzone</th><th>Huidige Tijd (uur:minuut)</th></tr>
+  </thead>
+  <tbody id="tz-table-body"></tbody>
+</table>
+
+<h1>Jouw Lokale Tijd (7-segment stijl)</h1>
+<div class="clock" id="local-clock">--:--</div>
 
 <script>
-  const landen = [
-    { naam: "Nederland", tijdzone: "Europe/Amsterdam" },
-    { naam: "Verenigde Staten (New York)", tijdzone: "America/New_York" },
-    { naam: "Japan", tijdzone: "Asia/Tokyo" },
-    { naam: "Australië (Sydney)", tijdzone: "Australia/Sydney" },
-    { naam: "Brazilië (Rio de Janeiro)", tijdzone: "America/Sao_Paulo" },
-    { naam: "Zuid-Afrika", tijdzone: "Africa/Johannesburg" }
+async function getAllTimeZones() {
+  // Controleer of de browser dit ondersteunt:
+  if (Intl.supportedValuesOf) {
+    return Intl.supportedValuesOf('timeZone');
+  }
+  // Fallback: lijst van populaire zones (kan je uitbreiden)
+  return [
+    'UTC', 'Europe/Amsterdam', 'America/New_York', 'Asia/Tokyo', 'Australia/Sydney'
   ];
+}
 
-  // 7-segment codes per cijfer: welke segmenten aan (a-g)
-  const segmentenPerCijfer = {
-    '0': ['a','b','c','d','e','f'],
-    '1': ['b','c'],
-    '2': ['a','b','g','e','d'],
-    '3': ['a','b','g','c','d'],
-    '4': ['f','g','b','c'],
-    '5': ['a','f','g','c','d'],
-    '6': ['a','f','g','e','c','d'],
-    '7': ['a','b','c'],
-    '8': ['a','b','c','d','e','f','g'],
-    '9': ['a','b','c','d','f','g']
-  };
+function formatTime7Segment(date) {
+  // Zet uren en minuten met voorloopnul
+  let h = date.getHours();
+  let m = date.getMinutes();
+  if (h < 10) h = '0' + h;
+  if (m < 10) m = '0' + m;
 
-  function maakCijfer(num) {
-    const div = document.createElement('div');
-    div.classList.add('cijfer');
+  // Laat dubbele punt knipperen per seconde
+  const s = date.getSeconds();
+  const colon = s % 2 === 0 ? ':' : ' ';
+  return `${h}${colon}${m}`;
+}
 
-    // Maak de 7 segment divs
-    ['a','b','c','d','e','f','g'].forEach(s => {
-      const seg = document.createElement('div');
-      seg.classList.add('segment', s);
-      if (segmentenPerCijfer[num].includes(s)) {
-        seg.classList.add('aan');
-      }
-      div.appendChild(seg);
-    });
-    return div;
-  }
+function getTimeInZone(timeZone) {
+  // Haal huidige tijd in de opgegeven tijdzone
+  return new Date(new Date().toLocaleString('en-US', { timeZone }));
+}
 
-  function maakDubbelPunt() {
-    const dp = document.createElement('div');
-    dp.classList.add('dubbelpunt');
-    const top = document.createElement('span');
-    top.classList.add('top');
-    const bottom = document.createElement('span');
-    bottom.classList.add('bottom');
-    dp.appendChild(top);
-    dp.appendChild(bottom);
-    return dp;
-  }
+async function showTimeZones() {
+  const zones = await getAllTimeZones();
+  const tbody = document.getElementById('tz-table-body');
+  tbody.innerHTML = '';
 
-  function updateTijden() {
-    const container = document.getElementById('landenContainer');
-    container.innerHTML = '';
+  zones.forEach(tz => {
+    const tr = document.createElement('tr');
+    const timeInZone = getTimeInZone(tz);
+    const formattedTime = formatTime7Segment(timeInZone);
+    tr.innerHTML = `<td>${tz}</td><td>${formattedTime}</td>`;
+    tbody.appendChild(tr);
+  });
+}
 
-    landen.forEach(land => {
-      // Haal tijd op voor tijdzone
-      const opties = {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: land.tijdzone
-      };
-      const tijdFormatter = new Intl.DateTimeFormat('nl-NL', opties);
-      const tijdString = tijdFormatter.format(new Date()); // bv "21:05:09"
+function updateLocalClock() {
+  const clock = document.getElementById('local-clock');
+  clock.textContent = formatTime7Segment(new Date());
+}
 
-      // Maak element voor land en tijd
-      const landDiv = document.createElement('div');
-      landDiv.classList.add('land');
+// Update tijden elke seconde
+setInterval(() => {
+  updateLocalClock();
+  showTimeZones();
+}, 1000);
 
-      const naamDiv = document.createElement('div');
-      naamDiv.classList.add('landnaam');
-      naamDiv.textContent = land.naam;
-      landDiv.appendChild(naamDiv);
+// Eerste keer laden
+updateLocalClock();
+showTimeZones();
 
-      const klokDiv = document.createElement('div');
-      klokDiv.classList.add('klok');
-
-      // Tijd string is "HH:MM:SS"
-      // We maken per cijfer een 7-segment cijfer en plaatsen dubbele punten
-      for (let i = 0; i < tijdString.length; i++) {
-        const char = tijdString[i];
-        if (char === ':') {
-          klokDiv.appendChild(maakDubbelPunt());
-        } else {
-          klokDiv.appendChild(maakCijfer(char));
-        }
-      }
-
-      landDiv.appendChild(klokDiv);
-      container.appendChild(landDiv);
-    });
-  }
-
-  updateTijden();
-  setInterval(updateTijden, 1000);
 </script>
-
 </body>
 </html>
