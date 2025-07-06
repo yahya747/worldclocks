@@ -7,8 +7,8 @@
 <style>
   body {
     font-family: monospace;
-    background: #111;
-    color: #eee;
+    background: #000;
+    color: #0f0;
     padding: 20px;
   }
   h1 {
@@ -16,26 +16,92 @@
   }
   table {
     width: 100%;
-    border-collapse: collapse;
     max-width: 900px;
-    margin: 0 auto 40px;
+    margin: 20px auto;
+    border-collapse: collapse;
   }
   th, td {
-    border: 1px solid #555;
-    padding: 4px 10px;
-    font-size: 0.9rem;
+    border: 1px solid #0f0;
+    padding: 6px 10px;
+    font-size: 0.85rem;
   }
   th {
-    background: #333;
+    background: #022;
   }
   tbody tr:nth-child(odd) {
-    background: #222;
+    background: #001100;
   }
-  .clock {
-    font-size: 4rem;
-    text-align: center;
-    font-family: 'Courier New', Courier, monospace;
-    margin-bottom: 50px;
+  tbody tr:nth-child(even) {
+    background: #002200;
+  }
+  /* 7-segment container */
+  #local-clock {
+    display: flex;
+    justify-content: center;
+    margin: 40px auto;
+    width: fit-content;
+    gap: 12px;
+  }
+  /* Elke cijfer (digit) container */
+  .digit {
+    position: relative;
+    width: 40px;
+    height: 80px;
+  }
+  /* Segment stijl */
+  .segment {
+    position: absolute;
+    background: #022;
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+  .segment.on {
+    background: #0f0;
+    box-shadow: 0 0 10px #0f0;
+  }
+  /* Segment posities */
+  .a {
+    top: 0; left: 5px; right: 5px; height: 10px;
+  }
+  .b {
+    top: 5px; right: 0; width: 10px; height: 30px;
+  }
+  .c {
+    bottom: 5px; right: 0; width: 10px; height: 30px;
+  }
+  .d {
+    bottom: 0; left: 5px; right: 5px; height: 10px;
+  }
+  .e {
+    bottom: 5px; left: 0; width: 10px; height: 30px;
+  }
+  .f {
+    top: 5px; left: 0; width: 10px; height: 30px;
+  }
+  .g {
+    top: 35px; left: 5px; right: 5px; height: 10px;
+  }
+  /* Dubbele punt */
+  #colon {
+    position: relative;
+    width: 20px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+  }
+  #colon .dot {
+    width: 12px;
+    height: 12px;
+    background: #022;
+    border-radius: 50%;
+    box-shadow: none;
+    transition: background 0.3s;
+  }
+  #colon .dot.on {
+    background: #0f0;
+    box-shadow: 0 0 10px #0f0;
   }
 </style>
 </head>
@@ -50,68 +116,153 @@
   <tbody id="tz-table-body"></tbody>
 </table>
 
-<h1>Jouw Lokale Tijd (7-segment stijl)</h1>
-<div class="clock" id="local-clock">--:--</div>
+<h1>Jouw Lokale Tijd (7-Segment Klok)</h1>
+<div id="local-clock">
+  <!-- Hier komen de cijfers en dubbele punt -->
+</div>
 
 <script>
-async function getAllTimeZones() {
-  // Controleer of de browser dit ondersteunt:
+// 7 segment digit bits:
+// a,b,c,d,e,f,g (in volgorde 0-6)  
+// Segmenten per cijfer (0-9):
+const digitsSegments = [
+  [1,1,1,1,1,1,0], // 0
+  [0,1,1,0,0,0,0], // 1
+  [1,1,0,1,1,0,1], // 2
+  [1,1,1,1,0,0,1], // 3
+  [0,1,1,0,0,1,1], // 4
+  [1,0,1,1,0,1,1], // 5
+  [1,0,1,1,1,1,1], // 6
+  [1,1,1,0,0,0,0], // 7
+  [1,1,1,1,1,1,1], // 8
+  [1,1,1,1,0,1,1]  // 9
+];
+
+// Maak een digit element
+function createDigit() {
+  const d = document.createElement('div');
+  d.classList.add('digit');
+  ['a','b','c','d','e','f','g'].forEach(seg => {
+    const s = document.createElement('div');
+    s.classList.add('segment', seg);
+    d.appendChild(s);
+  });
+  return d;
+}
+
+// Zet een cijfer aan/uit
+function setDigit(digitElement, num) {
+  const segs = digitsSegments[num];
+  const segElements = digitElement.querySelectorAll('.segment');
+  segElements.forEach((segEl, i) => {
+    if (segs[i]) segEl.classList.add('on');
+    else segEl.classList.remove('on');
+  });
+}
+
+// Maak dubbele punt element
+function createColon() {
+  const colon = document.createElement('div');
+  colon.id = 'colon';
+  const dotTop = document.createElement('div');
+  dotTop.classList.add('dot');
+  const dotBottom = document.createElement('div');
+  dotBottom.classList.add('dot');
+  colon.appendChild(dotTop);
+  colon.appendChild(dotBottom);
+  return colon;
+}
+
+// Toon tijd in 7 segment weergave
+function showLocalTime7Segment(date) {
+  const clock = document.getElementById('local-clock');
+  clock.innerHTML = ''; // leegmaken
+
+  const h = date.getHours();
+  const m = date.getMinutes();
+
+  // Cijfers opsplitsen
+  const digits = [
+    Math.floor(h / 10), h % 10,
+    Math.floor(m / 10), m % 10
+  ];
+
+  // Maak en voeg digits toe
+  const d1 = createDigit();
+  setDigit(d1, digits[0]);
+  clock.appendChild(d1);
+
+  const d2 = createDigit();
+  setDigit(d2, digits[1]);
+  clock.appendChild(d2);
+
+  // Dubbele punt
+  const colon = createColon();
+  // Knipper dubbele punt elke seconde
+  if (date.getSeconds() % 2 === 0) {
+    colon.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
+  }
+  clock.appendChild(colon);
+
+  const d3 = createDigit();
+  setDigit(d3, digits[2]);
+  clock.appendChild(d3);
+
+  const d4 = createDigit();
+  setDigit(d4, digits[3]);
+  clock.appendChild(d4);
+}
+
+// Haal alle tijdzones (IANA)
+function getAllTimeZones() {
   if (Intl.supportedValuesOf) {
     return Intl.supportedValuesOf('timeZone');
   }
-  // Fallback: lijst van populaire zones (kan je uitbreiden)
+  // fallback
   return [
     'UTC', 'Europe/Amsterdam', 'America/New_York', 'Asia/Tokyo', 'Australia/Sydney'
   ];
 }
 
-function formatTime7Segment(date) {
-  // Zet uren en minuten met voorloopnul
+// Format tijd als "hh:mm"
+function formatTime(date) {
   let h = date.getHours();
   let m = date.getMinutes();
   if (h < 10) h = '0' + h;
   if (m < 10) m = '0' + m;
-
-  // Laat dubbele punt knipperen per seconde
-  const s = date.getSeconds();
-  const colon = s % 2 === 0 ? ':' : ' ';
-  return `${h}${colon}${m}`;
+  return `${h}:${m}`;
 }
 
+// Krijg tijd in specifieke tijdzone
 function getTimeInZone(timeZone) {
-  // Haal huidige tijd in de opgegeven tijdzone
   return new Date(new Date().toLocaleString('en-US', { timeZone }));
 }
 
-async function showTimeZones() {
-  const zones = await getAllTimeZones();
+// Toon alle tijdzones en tijden in tabel
+function showTimeZones() {
   const tbody = document.getElementById('tz-table-body');
   tbody.innerHTML = '';
+  const zones = getAllTimeZones();
 
   zones.forEach(tz => {
     const tr = document.createElement('tr');
-    const timeInZone = getTimeInZone(tz);
-    const formattedTime = formatTime7Segment(timeInZone);
-    tr.innerHTML = `<td>${tz}</td><td>${formattedTime}</td>`;
+    const time = getTimeInZone(tz);
+    const timeStr = formatTime(time);
+    tr.innerHTML = `<td>${tz}</td><td>${timeStr}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-function updateLocalClock() {
-  const clock = document.getElementById('local-clock');
-  clock.textContent = formatTime7Segment(new Date());
+// Update alles elke seconde
+function update() {
+  showTimeZones();
+  showLocalTime7Segment(new Date());
 }
 
-// Update tijden elke seconde
-setInterval(() => {
-  updateLocalClock();
-  showTimeZones();
-}, 1000);
-
-// Eerste keer laden
-updateLocalClock();
-showTimeZones();
+setInterval(update, 1000);
+update();
 
 </script>
+
 </body>
 </html>
