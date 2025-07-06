@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Static World Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Map of Europe</title>
   <style>
     body {
-      background: #111;
       margin: 0;
+      background-color: #111;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -23,15 +23,23 @@
   </style>
 </head>
 <body>
-  <!-- Een echte wereldkaart uit Natural Earth in SVG-formaat (vereenvoudigd) -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1001">
-    <!-- Voorbeeld: Europa, Afrika, delen van Azië en Amerika -->
-    <path d="M1320 280 L1325 278 L1330 280 L1330 285 L1325 288 L1320 285 Z" />
-    <path d="M800 450 L820 460 L830 480 L810 490 L790 475 Z" />
-    <path d="M600 300 L620 310 L615 330 L590 320 Z" />
-    <path d="M1100 400 L1130 405 L1140 420 L1115 425 Z" />
-    <path d="M950 600 L980 610 L960 640 L930 620 Z" />
-    <!-- ... je kunt meer echte paths toevoegen voor meer landen -->
-  </svg>
+
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Europe">
+  <!-- Nederland -->
+  <path d="M350,200 L355,195 L360,200 L360,205 L355,210 L350,205 Z" />
+  <!-- Duitsland -->
+  <path d="M365,205 L375,200 L380,210 L375,220 L365,215 Z" />
+  <!-- Frankrijk -->
+  <path d="M350,215 L360,220 L355,230 L345,225 Z" />
+  <!-- België -->
+  <path d="M355,210 L360,208 L362,212 L357,215 Z" />
+  <!-- Spanje -->
+  <path d="M330,250 L350,255 L345,270 L325,265 Z" />
+  <!-- Italië -->
+  <path d="M385,240 L395,245 L390,260 L380,255 Z" />
+  <!-- Verenigd Koninkrijk -->
+  <path d="M340,180 L345,175 L350,180 L345,185 Z" />
+</svg>
+
 </body>
 </html>
