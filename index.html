@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>World Clocks</title>
+  <title>World Clocks - Red 7-Segment</title>
   <style>
     @font-face {
-      font-family: 'Digital';
-      src: url('https://cdn.jsdelivr.net/gh/keshikan/Digital-7@master/digital-7.ttf') format('truetype');
+      font-family: 'Digital-7Mono';
+      src: url('https://cdn.jsdelivr.net/gh/keshikan/Digital-7@master/digital-7mono.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
     }
 
     body {
@@ -29,15 +31,19 @@
     }
 
     .time {
-      font-family: 'Digital', monospace;
-      font-size: 3em;
-      color: #0f0;
-      background: black;
-      padding: 10px 20px;
-      border-radius: 10px;
+      font-family: 'Digital-7Mono', monospace;
+      font-size: 4em;
+      color: #FF0000; /* Classic red LED color */
+      background: #220000; /* Dark red background for glow effect */
+      padding: 10px 25px;
+      border-radius: 15px;
       display: inline-block;
       margin-top: 10px;
-      letter-spacing: 3px;
+      letter-spacing: 8px;
+      text-shadow:
+        0 0 8px #FF0000,
+        0 0 15px #FF0000,
+        0 0 20px #FF6347;
     }
   </style>
 </head>
@@ -66,7 +72,7 @@
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: false // ← DIT zorgt voor 24-uurs klok
+          hour12: false
         });
         document.getElementById("time-" + id).textContent = time;
       }
