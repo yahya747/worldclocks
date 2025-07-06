@@ -3,119 +3,133 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>World Timezones with Seconds</title>
+<title>World Timezones with 7-Segment Style</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #eee;
-    margin: 20px;
+    background-color: #121212;
+    color: #eeeeee;
+    font-family: 'Courier New', Courier, monospace;
     text-align: center;
+    margin: 20px;
+  }
+  h1 {
+    margin-bottom: 20px;
   }
   table {
-    margin: 20px auto;
+    margin: 0 auto;
     border-collapse: collapse;
     width: 90%;
-    max-width: 1100px;
+    max-width: 900px;
   }
   th, td {
     border: 1px solid #444;
-    padding: 12px 20px;
-    font-size: 16px;
+    padding: 12px 10px;
+    font-size: 1.1rem;
   }
   th {
     background-color: #333;
   }
-  tr:nth-child(even) {
-    background-color: #2a2a2a;
+  tbody tr:nth-child(odd) {
+    background-color: #222;
   }
-  tr:nth-child(odd) {
-    background-color: #1f1f1f;
-  }
-  #current-time-container {
-    margin-top: 40px;
-    background-color: #333;
-    color: #fff;
-    display: inline-block;
-    padding: 15px 40px;
-    border-radius: 10px;
-    font-size: 22px;
+  /* 7-segment style for time cells */
+  .seven-seg {
+    font-family: 'Digital-7', monospace;
     font-weight: bold;
-    letter-spacing: 2px;
-    box-shadow: 0 0 8px #00ccff;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    color: #0ff;
+    text-shadow:
+      0 0 8px #0ff,
+      0 0 20px #0ff,
+      0 0 30px #0ff,
+      0 0 40px #0ff;
+  }
+  #currentTime {
+    margin-top: 30px;
+    font-size: 1.6rem;
+    font-family: 'Digital-7', monospace;
+    color: #0f0;
+    text-shadow:
+      0 0 8px #0f0,
+      0 0 20px #0f0,
+      0 0 30px #0f0;
   }
 </style>
 </head>
 <body>
 
-<h1>World Timezones</h1>
+<h1>World Timezones - Current Time</h1>
 
-<table id="timezone-table">
+<table>
   <thead>
     <tr>
       <th>Timezone</th>
-      <th>Current Time (HH:MM:SS)</th>
+      <th>Current Time</th>
     </tr>
   </thead>
-  <tbody>
-    <!-- Rows inserted by JS -->
+  <tbody id="timezonesTable">
+    <!-- Rows will be inserted here by JS -->
   </tbody>
 </table>
 
-<div id="current-time-container">
-  Your Local Time: <span id="current-time">00:00:00</span>
-</div>
+<div id="currentTime">Loading your local time...</div>
 
 <script>
-const timezones = [
-  "Pacific/Midway", "Pacific/Honolulu", "America/Anchorage", "America/Los_Angeles",
-  "America/Denver", "America/Chicago", "America/New_York", "America/Sao_Paulo",
-  "Atlantic/Azores", "Europe/London", "Europe/Berlin", "Europe/Moscow",
-  "Asia/Dubai", "Asia/Karachi", "Asia/Kolkata", "Asia/Bangkok",
-  "Asia/Shanghai", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland",
-  "Pacific/Fiji", "Etc/GMT+12", "Etc/GMT+11", "Etc/GMT+10", "Etc/GMT+9",
-  "Etc/GMT+8", "Etc/GMT+7", "Etc/GMT+6", "Etc/GMT+5", "Etc/GMT+4",
-  "Etc/GMT+3", "Etc/GMT+2", "Etc/GMT+1", "Etc/GMT-1", "Etc/GMT-2",
-  "Etc/GMT-3", "Etc/GMT-4", "Etc/GMT-5", "Etc/GMT-6", "Etc/GMT-7",
-  "Etc/GMT-8", "Etc/GMT-9", "Etc/GMT-10", "Etc/GMT-11", "Etc/GMT-12"
-];
+  // List of all IANA timezones
+  const timezones = Intl.supportedValuesOf('timeZone');
 
-function updateTable() {
-  const tbody = document.querySelector("#timezone-table tbody");
-  tbody.innerHTML = "";
-  const now = new Date();
+  const tbody = document.getElementById('timezonesTable');
+  const currentTimeDiv = document.getElementById('currentTime');
 
-  timezones.forEach(tz => {
-    const timeString = now.toLocaleTimeString("en-US", {
-      timeZone: tz,
+  // Format time as HH:MM:SS with leading zeros, no AM/PM, no timezone abbrev
+  function formatTime(date, timeZone) {
+    return date.toLocaleTimeString('en-GB', {
       hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: timeZone
     });
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${tz}</td><td>${timeString}</td>`;
-    tbody.appendChild(tr);
-  });
-}
+  }
 
-function updateCurrentTime() {
-  const now = new Date();
-  const timeString = now.toLocaleTimeString("en-US", {
-    hour12: false,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-  document.getElementById("current-time").textContent = timeString;
-}
+  // Build the table rows for all timezones
+  function buildTable() {
+    tbody.innerHTML = ''; // clear existing
 
-updateTable();
-updateCurrentTime();
-setInterval(() => {
-  updateTable();
-  updateCurrentTime();
-}, 1000);
+    const now = new Date();
+
+    timezones.forEach(tz => {
+      const timeString = formatTime(now, tz);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${tz}</td>
+        <td class="seven-seg">${timeString}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Update the times every second
+  function updateTimes() {
+    const now = new Date();
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+      const tz = row.children[0].textContent;
+      row.children[1].textContent = formatTime(now, tz);
+    });
+    // Also update local time at bottom
+    currentTimeDiv.textContent = `Your Local Time: ${formatTime(now, Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
+  }
+
+  // Initial build
+  buildTable();
+
+  // Update every second
+  setInterval(updateTimes, 1000);
+
+  // Update local time immediately
+  updateTimes();
 </script>
 
 </body>
