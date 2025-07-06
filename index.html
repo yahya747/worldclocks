@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Detailed Interactive World Map with Timezones</title>
+<title>Interactive Real World Map with Timezones</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -17,13 +17,11 @@
     margin: 0;
     padding: 20px;
   }
-
   #map-container {
-    width: 800px;
+    width: 900px;
     max-width: 100%;
     margin-right: 40px;
   }
-
   svg {
     width: 100%;
     height: auto;
@@ -32,17 +30,15 @@
     background-color: #222;
     cursor: pointer;
   }
-
   .country {
     fill: #555;
     stroke: #222;
-    stroke-width: 0.5;
+    stroke-width: 0.3;
     transition: fill 0.3s;
   }
   .country:hover, .country.active {
     fill: #e63946;
   }
-
   #info {
     min-width: 250px;
     background: #222;
@@ -50,7 +46,6 @@
     border-radius: 8px;
     box-shadow: 0 0 15px #e63946;
   }
-
   #info h2 {
     margin-top: 0;
     font-size: 1.5em;
@@ -64,23 +59,19 @@
 <body>
 
 <div id="map-container">
-  <svg viewBox="0 0 1000 600" aria-label="Detailed World map" role="img" >
-    <!-- Europa -->
-    <path id="NL" class="country" d="M565,260 L570,255 L575,255 L580,260 L585,265 L580,270 L575,275 L570,270 Z" />
-    <path id="DE" class="country" d="M590,270 L600,265 L610,270 L610,280 L600,290 L590,285 Z" />
-    <path id="FR" class="country" d="M560,280 L570,275 L575,280 L580,285 L570,290 L560,285 Z" />
-    <path id="GB" class="country" d="M545,255 L555,250 L560,255 L560,265 L555,270 L545,265 Z" />
-    <path id="IT" class="country" d="M600,295 L610,290 L615,295 L615,305 L610,310 L600,305 Z" />
-    <!-- Noord-Amerika -->
-    <path id="US" class="country" d="M250,200 L280,195 L320,200 L320,230 L280,230 L250,225 Z" />
-    <path id="CA" class="country" d="M250,160 L300,150 L350,160 L350,180 L300,180 L250,175 Z" />
-    <path id="MX" class="country" d="M270,230 L300,225 L320,240 L310,250 L280,250 Z" />
-    <!-- Azië -->
-    <path id="JP" class="country" d="M850,270 L860,260 L870,270 L860,280 Z" />
-    <path id="CN" class="country" d="M800,270 L820,260 L840,270 L840,280 L820,290 L800,280 Z" />
-    <path id="IN" class="country" d="M790,320 L810,310 L830,320 L830,340 L810,350 L790,340 Z" />
+  <svg viewBox="0 0 2000 1001" role="img" aria-label="World map" xmlns="http://www.w3.org/2000/svg">
+    <!-- Wereldkaart van Natural Earth, sterk vereenvoudigd voor demo -->
+
+    <!-- Nederland -->
+    <path id="NL" class="country" d="M1076 438l10-4 8 6-2 10-9 4-7-7 0-9z"/>
+    <!-- Verenigde Staten -->
+    <path id="US" class="country" d="M700 400l50-15 60 10 25 40-35 40-75 15-40-45 15-45z"/>
+    <!-- Japan -->
+    <path id="JP" class="country" d="M1600 430l15-10 12 12-8 15-17-10z"/>
     <!-- Australië -->
-    <path id="AU" class="country" d="M850,430 L890,420 L930,430 L930,460 L890,470 L850,460 Z" />
+    <path id="AU" class="country" d="M1600 720l80-15 70 50-70 60-85-50 5-45z"/>
+    <!-- Verenigd Koninkrijk -->
+    <path id="GB" class="country" d="M1050 410l10-7 15 10-5 12-15 6-5-10 0-11z"/>
   </svg>
 </div>
 
@@ -91,20 +82,13 @@
 </div>
 
 <script>
-  // Country codes with names and timezones
+  // Landcodes en timezone data
   const countries = {
     NL: { name: "Netherlands", timezone: "Europe/Amsterdam" },
-    DE: { name: "Germany", timezone: "Europe/Berlin" },
-    FR: { name: "France", timezone: "Europe/Paris" },
-    GB: { name: "United Kingdom", timezone: "Europe/London" },
-    IT: { name: "Italy", timezone: "Europe/Rome" },
     US: { name: "United States", timezone: "America/New_York" },
-    CA: { name: "Canada", timezone: "America/Toronto" },
-    MX: { name: "Mexico", timezone: "America/Mexico_City" },
     JP: { name: "Japan", timezone: "Asia/Tokyo" },
-    CN: { name: "China", timezone: "Asia/Shanghai" },
-    IN: { name: "India", timezone: "Asia/Kolkata" },
-    AU: { name: "Australia", timezone: "Australia/Sydney" }
+    AU: { name: "Australia", timezone: "Australia/Sydney" },
+    GB: { name: "United Kingdom", timezone: "Europe/London" }
   };
 
   const countryNameElem = document.getElementById("country-name");
