@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wereldklokken</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .clock {
+      font-size: 2em;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 Wereldklokken</h1>
+  
+  <div class="clock" id="nl">🇳🇱 Nederland: <span id="time-nl"></span></div>
+  <div class="clock" id="ny">🇺🇸 New York: <span id="time-ny"></span></div>
+  <div class="clock" id="tokyo">🇯🇵 Tokyo: <span id="time-tokyo"></span></div>
+  <div class="clock" id="sydney">🇦🇺 Sydney: <span id="time-sydney"></span></div>
+  <div class="clock" id="london">🇬🇧 Londen: <span id="time-london"></span></div>
+
+  <script>
+    function updateClocks() {
+      const zones = {
+        "nl": "Europe/Amsterdam",
+        "ny": "America/New_York",
+        "tokyo": "Asia/Tokyo",
+        "sydney": "Australia/Sydney",
+        "london": "Europe/London"
+      };
+
+      for (const [id, zone] of Object.entries(zones)) {
+        const time = new Date().toLocaleTimeString("nl-NL", {
+          timeZone: zone,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+        document.getElementById("time-" + id).textContent = time;
+      }
+    }
+
+    setInterval(updateClocks, 1000);
+    updateClocks();
+  </script>
+</body>
+</html>
