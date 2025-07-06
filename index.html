@@ -3,245 +3,159 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>7 Segment World Clocks</title>
+<title>Interactive World Map with Timezones</title>
 <style>
   body {
-    background-color: #111;
+    font-family: Arial, sans-serif;
+    background: #111;
     color: white;
-    font-family: sans-serif;
-    text-align: center;
-    padding-top: 40px;
-  }
-  h1 {
-    margin-bottom: 40px;
-  }
-  .clock-container {
-    display: inline-block;
-    margin: 20px;
-  }
-  .label {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  .seven-seg {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
   }
-  .digit {
-    position: relative;
-    width: 40px;
-    height: 70px;
-    margin: 0 5px;
+
+  #map-container {
+    width: 600px;
+    max-width: 100%;
+    margin-right: 40px;
   }
-  /* Segment common style */
-  .segment {
-    position: absolute;
-    background-color: #220000; /* donkerder en minder fel rood */
-    transition: background-color 0.2s;
+
+  svg {
+    width: 100%;
+    height: auto;
+    border: 2px solid #444;
+    border-radius: 8px;
+    background-color: #222;
+    cursor: pointer;
   }
-  .segment.on {
-    background-color: #ff0000; /* fel rood */
+
+  .country {
+    fill: #555;
+    stroke: #222;
+    stroke-width: 1;
+    transition: fill 0.3s;
   }
-  /* Each segment position */
-  .a {
-    top: 0;
-    left: 7px;
-    width: 26px;
-    height: 8px;
-    border-radius: 4px;
+  .country:hover, .country.active {
+    fill: #e63946;
   }
-  .b {
-    top: 7px;
-    right: 0;
-    width: 8px;
-    height: 26px;
-    border-radius: 4px;
+
+  #info {
+    min-width: 250px;
+    background: #222;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px #e63946;
   }
-  .c {
-    bottom: 7px;
-    right: 0;
-    width: 8px;
-    height: 26px;
-    border-radius: 4px;
+
+  #info h2 {
+    margin-top: 0;
+    font-size: 1.5em;
   }
-  .d {
-    bottom: 0;
-    left: 7px;
-    width: 26px;
-    height: 8px;
-    border-radius: 4px;
-  }
-  .e {
-    bottom: 7px;
-    left: 0;
-    width: 8px;
-    height: 26px;
-    border-radius: 4px;
-  }
-  .f {
-    top: 7px;
-    left: 0;
-    width: 8px;
-    height: 26px;
-    border-radius: 4px;
-  }
-  .g {
-    top: 31px;
-    left: 7px;
-    width: 26px;
-    height: 8px;
-    border-radius: 4px;
-  }
-  /* Colon */
-  .colon {
-    width: 20px;
-    height: 70px;
-    margin: 0 5px;
-    position: relative;
-  }
-  .colon-dot {
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .colon-dot.top {
-    top: 20px;
-  }
-  .colon-dot.bottom {
-    bottom: 20px;
+  #info p {
+    font-size: 1.3em;
+    margin: 10px 0 0 0;
   }
 </style>
 </head>
 <body>
-  <h1>🌍 7-Segment World Clocks</h1>
 
-  <div class="clock-container" id="clock-nl">
-    <div class="label">🇳🇱 Netherlands</div>
-    <div class="seven-seg"></div>
-  </div>
+<div id="map-container">
+  <svg viewBox="0 0 800 450" aria-label="World map" role="img" >
+    <!-- Nederland -->
+    <path id="NL" class="country" d="M440,210 L445,205 L450,210 L455,215 L460,210 L455,205 L450,200 L445,205 Z" />
+    <!-- Verenigde Staten (vereenvoudigd) -->
+    <path id="US" class="country" d="M200,150 L260,150 L260,190 L200,190 Z" />
+    <!-- Japan -->
+    <path id="JP" class="country" d="M650,190 L660,180 L670,190 L660,200 Z" />
+    <!-- Australië -->
+    <path id="AU" class="country" d="M600,350 L640,350 L640,390 L600,390 Z" />
+    <!-- Verenigd Koninkrijk -->
+    <path id="GB" class="country" d="M430,180 L440,180 L440,190 L430,190 Z" />
+  </svg>
+</div>
 
-  <div class="clock-container" id="clock-ny">
-    <div class="label">🇺🇸 New York</div>
-    <div class="seven-seg"></div>
-  </div>
-
-  <div class="clock-container" id="clock-tokyo">
-    <div class="label">🇯🇵 Tokyo</div>
-    <div class="seven-seg"></div>
-  </div>
-
-  <div class="clock-container" id="clock-sydney">
-    <div class="label">🇦🇺 Sydney</div>
-    <div class="seven-seg"></div>
-  </div>
-
-  <div class="clock-container" id="clock-london">
-    <div class="label">🇬🇧 London</div>
-    <div class="seven-seg"></div>
-  </div>
+<div id="info">
+  <h2>Hover over a country</h2>
+  <p id="country-name">No country selected</p>
+  <p id="local-time"></p>
+</div>
 
 <script>
-  // Segment mapping for digits 0-9
-  // Order: a,b,c,d,e,f,g segments on or off
-  const digitMap = {
-    "0": [1,1,1,1,1,1,0],
-    "1": [0,1,1,0,0,0,0],
-    "2": [1,1,0,1,1,0,1],
-    "3": [1,1,1,1,0,0,1],
-    "4": [0,1,1,0,0,1,1],
-    "5": [1,0,1,1,0,1,1],
-    "6": [1,0,1,1,1,1,1],
-    "7": [1,1,1,0,0,0,0],
-    "8": [1,1,1,1,1,1,1],
-    "9": [1,1,1,1,0,1,1],
+  // Koppel landcodes aan timezone namen en volledige landnamen
+  const countries = {
+    NL: { name: "Netherlands", timezone: "Europe/Amsterdam" },
+    US: { name: "United States", timezone: "America/New_York" },
+    JP: { name: "Japan", timezone: "Asia/Tokyo" },
+    AU: { name: "Australia/Sydney", timezone: "Australia/Sydney" },
+    GB: { name: "United Kingdom", timezone: "Europe/London" }
   };
 
-  // Create digit HTML element with 7 segments
-  function createDigit() {
-    const digit = document.createElement("div");
-    digit.className = "digit";
+  const countryNameElem = document.getElementById("country-name");
+  const localTimeElem = document.getElementById("local-time");
 
-    ["a","b","c","d","e","f","g"].forEach(seg => {
-      const segment = document.createElement("div");
-      segment.className = "segment " + seg;
-      digit.appendChild(segment);
+  function updateTime(tz) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString("en-GB", {
+      timeZone: tz,
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
     });
-
-    return digit;
+    return timeStr;
   }
 
-  // Create colon element
-  function createColon() {
-    const colon = document.createElement("div");
-    colon.className = "colon";
-    const dotTop = document.createElement("div");
-    dotTop.className = "colon-dot top";
-    const dotBottom = document.createElement("div");
-    dotBottom.className = "colon-dot bottom";
-    colon.appendChild(dotTop);
-    colon.appendChild(dotBottom);
-    return colon;
-  }
+  // Select alle landen
+  const countryElems = document.querySelectorAll(".country");
 
-  // Render a digit inside a seven-seg container, turning on/off segments
-  function renderDigit(container, number) {
-    const segments = container.querySelectorAll(".segment");
-    const onOff = digitMap[number];
-    onOff.forEach((on, idx) => {
-      if(on) {
-        segments[idx].classList.add("on");
-      } else {
-        segments[idx].classList.remove("on");
+  countryElems.forEach(el => {
+    el.addEventListener("mouseenter", () => {
+      // Verwijder actieve klasse van alle landen
+      countryElems.forEach(c => c.classList.remove("active"));
+
+      // Voeg actieve klasse toe aan deze
+      el.classList.add("active");
+
+      const c = countries[el.id];
+      if(c) {
+        countryNameElem.textContent = c.name;
+        localTimeElem.textContent = updateTime(c.timezone);
       }
     });
-  }
 
-  // Build a time string (HH:MM:SS) as digits and colons
-  // For each clock container
-  function buildClock(container, timeStr) {
-    const segContainer = container.querySelector(".seven-seg");
-    segContainer.innerHTML = ""; // clear previous
+    el.addEventListener("mouseleave", () => {
+      el.classList.remove("active");
+      countryNameElem.textContent = "No country selected";
+      localTimeElem.textContent = "";
+    });
+  });
 
-    for(let i=0; i<timeStr.length; i++) {
-      const ch = timeStr.charAt(i);
-      if(ch === ":") {
-        segContainer.appendChild(createColon());
-      } else {
-        const digit = createDigit();
-        segContainer.appendChild(digit);
-        renderDigit(digit, ch);
+  // Optioneel: tijd updaten elke seconde als je hover hebt
+  let hoverCountry = null;
+
+  countryElems.forEach(el => {
+    el.addEventListener("mouseenter", () => {
+      hoverCountry = el.id;
+    });
+    el.addEventListener("mouseleave", () => {
+      hoverCountry = null;
+    });
+  });
+
+  setInterval(() => {
+    if(hoverCountry) {
+      const c = countries[hoverCountry];
+      if(c) {
+        localTimeElem.textContent = updateTime(c.timezone);
       }
     }
-  }
+  }, 1000);
 
-  function updateAllClocks() {
-    const clocks = {
-      "clock-nl": "Europe/Amsterdam",
-      "clock-ny": "America/New_York",
-      "clock-tokyo": "Asia/Tokyo",
-      "clock-sydney": "Australia/Sydney",
-      "clock-london": "Europe/London"
-    };
-
-    for(const [id, tz] of Object.entries(clocks)) {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString("en-GB", {
-        timeZone: tz,
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-      const container = document.getElementById(id);
-      buildClock(container, timeStr);
-    }
-  }
-
-  setInterval(updateAllClocks, 1000);
-  updateAllClocks();
 </script>
+
 </body>
 </html>
