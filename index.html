@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive World Map with Timezones</title>
+<title>Detailed Interactive World Map with Timezones</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
   }
 
   #map-container {
-    width: 600px;
+    width: 800px;
     max-width: 100%;
     margin-right: 40px;
   }
@@ -36,7 +36,7 @@
   .country {
     fill: #555;
     stroke: #222;
-    stroke-width: 1;
+    stroke-width: 0.5;
     transition: fill 0.3s;
   }
   .country:hover, .country.active {
@@ -64,17 +64,23 @@
 <body>
 
 <div id="map-container">
-  <svg viewBox="0 0 800 450" aria-label="World map" role="img" >
-    <!-- Nederland -->
-    <path id="NL" class="country" d="M440,210 L445,205 L450,210 L455,215 L460,210 L455,205 L450,200 L445,205 Z" />
-    <!-- Verenigde Staten (vereenvoudigd) -->
-    <path id="US" class="country" d="M200,150 L260,150 L260,190 L200,190 Z" />
-    <!-- Japan -->
-    <path id="JP" class="country" d="M650,190 L660,180 L670,190 L660,200 Z" />
+  <svg viewBox="0 0 1000 600" aria-label="Detailed World map" role="img" >
+    <!-- Europa -->
+    <path id="NL" class="country" d="M565,260 L570,255 L575,255 L580,260 L585,265 L580,270 L575,275 L570,270 Z" />
+    <path id="DE" class="country" d="M590,270 L600,265 L610,270 L610,280 L600,290 L590,285 Z" />
+    <path id="FR" class="country" d="M560,280 L570,275 L575,280 L580,285 L570,290 L560,285 Z" />
+    <path id="GB" class="country" d="M545,255 L555,250 L560,255 L560,265 L555,270 L545,265 Z" />
+    <path id="IT" class="country" d="M600,295 L610,290 L615,295 L615,305 L610,310 L600,305 Z" />
+    <!-- Noord-Amerika -->
+    <path id="US" class="country" d="M250,200 L280,195 L320,200 L320,230 L280,230 L250,225 Z" />
+    <path id="CA" class="country" d="M250,160 L300,150 L350,160 L350,180 L300,180 L250,175 Z" />
+    <path id="MX" class="country" d="M270,230 L300,225 L320,240 L310,250 L280,250 Z" />
+    <!-- Azië -->
+    <path id="JP" class="country" d="M850,270 L860,260 L870,270 L860,280 Z" />
+    <path id="CN" class="country" d="M800,270 L820,260 L840,270 L840,280 L820,290 L800,280 Z" />
+    <path id="IN" class="country" d="M790,320 L810,310 L830,320 L830,340 L810,350 L790,340 Z" />
     <!-- Australië -->
-    <path id="AU" class="country" d="M600,350 L640,350 L640,390 L600,390 Z" />
-    <!-- Verenigd Koninkrijk -->
-    <path id="GB" class="country" d="M430,180 L440,180 L440,190 L430,190 Z" />
+    <path id="AU" class="country" d="M850,430 L890,420 L930,430 L930,460 L890,470 L850,460 Z" />
   </svg>
 </div>
 
@@ -85,13 +91,20 @@
 </div>
 
 <script>
-  // Koppel landcodes aan timezone namen en volledige landnamen
+  // Country codes with names and timezones
   const countries = {
     NL: { name: "Netherlands", timezone: "Europe/Amsterdam" },
+    DE: { name: "Germany", timezone: "Europe/Berlin" },
+    FR: { name: "France", timezone: "Europe/Paris" },
+    GB: { name: "United Kingdom", timezone: "Europe/London" },
+    IT: { name: "Italy", timezone: "Europe/Rome" },
     US: { name: "United States", timezone: "America/New_York" },
+    CA: { name: "Canada", timezone: "America/Toronto" },
+    MX: { name: "Mexico", timezone: "America/Mexico_City" },
     JP: { name: "Japan", timezone: "Asia/Tokyo" },
-    AU: { name: "Australia/Sydney", timezone: "Australia/Sydney" },
-    GB: { name: "United Kingdom", timezone: "Europe/London" }
+    CN: { name: "China", timezone: "Asia/Shanghai" },
+    IN: { name: "India", timezone: "Asia/Kolkata" },
+    AU: { name: "Australia", timezone: "Australia/Sydney" }
   };
 
   const countryNameElem = document.getElementById("country-name");
@@ -99,28 +112,25 @@
 
   function updateTime(tz) {
     const now = new Date();
-    const timeStr = now.toLocaleTimeString("en-GB", {
+    return now.toLocaleTimeString("en-GB", {
       timeZone: tz,
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit"
     });
-    return timeStr;
   }
 
-  // Select alle landen
   const countryElems = document.querySelectorAll(".country");
+  let hoverCountry = null;
 
   countryElems.forEach(el => {
     el.addEventListener("mouseenter", () => {
-      // Verwijder actieve klasse van alle landen
       countryElems.forEach(c => c.classList.remove("active"));
-
-      // Voeg actieve klasse toe aan deze
       el.classList.add("active");
 
-      const c = countries[el.id];
+      hoverCountry = el.id;
+      const c = countries[hoverCountry];
       if(c) {
         countryNameElem.textContent = c.name;
         localTimeElem.textContent = updateTime(c.timezone);
@@ -129,20 +139,9 @@
 
     el.addEventListener("mouseleave", () => {
       el.classList.remove("active");
+      hoverCountry = null;
       countryNameElem.textContent = "No country selected";
       localTimeElem.textContent = "";
-    });
-  });
-
-  // Optioneel: tijd updaten elke seconde als je hover hebt
-  let hoverCountry = null;
-
-  countryElems.forEach(el => {
-    el.addEventListener("mouseenter", () => {
-      hoverCountry = el.id;
-    });
-    el.addEventListener("mouseleave", () => {
-      hoverCountry = null;
     });
   });
 
@@ -154,7 +153,6 @@
       }
     }
   }, 1000);
-
 </script>
 
 </body>
