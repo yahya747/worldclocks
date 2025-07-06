@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Europe Map (Realistic)</title>
+  <title>Static USA Map</title>
   <style>
     body {
-      margin: 0;
       background: #111;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -18,29 +18,19 @@
       height: auto;
       fill: #666;
       stroke: #222;
-      stroke-width: 0.4;
+      stroke-width: 0.3;
     }
   </style>
 </head>
 <body>
-
-<!-- SVG-kaart van Europa (geselecteerde landen) -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" aria-label="Europe map">
-  <!-- Frankrijk -->
-  <path d="M400,600 L430,580 L450,590 L460,610 L440,630 L410,620 Z" />
-  <!-- Duitsland -->
-  <path d="M460,570 L480,560 L500,570 L500,590 L480,600 L460,590 Z" />
-  <!-- Nederland -->
-  <path d="M450,550 L455,545 L460,550 L455,555 Z" />
-  <!-- België -->
-  <path d="M445,560 L450,555 L455,560 L450,565 Z" />
-  <!-- Spanje -->
-  <path d="M370,670 L400,660 L410,690 L390,710 L360,700 Z" />
-  <!-- Italië -->
-  <path d="M510,620 L530,630 L520,660 L500,650 Z" />
-  <!-- Verenigd Koninkrijk -->
-  <path d="M420,520 L430,510 L440,520 L430,530 Z" />
-</svg>
-
+  <!-- SVG van de Verenigde Staten (alle 48 aaneengesloten staten) -->
+  <svg viewBox="0 0 959 593" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of USA">
+    <!-- Voorbeeld path van Texas -->
+    <path id="TX" d="M… (echte coördinaten hier) …Z"/>
+    <!-- Voorbeeld path van California -->
+    <path id="CA" d="M… (echte coördinaten hier) …Z"/>
+    <!-- etc. -->
+    <!-- Voeg alle paths uit de gedownloade SVG toe -->
+  </svg>
 </body>
 </html>
