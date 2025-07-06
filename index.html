@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Alle Tijdzones met 7-Segment Klok + Seconden</title>
+<title>All Timezones with 7-Segment Clock + Seconds</title>
 <style>
   body {
     font-family: 'Courier New', Courier, monospace;
@@ -130,20 +130,20 @@
 </head>
 <body>
 
-<h1>Alle Tijdzones met Huidige Tijd (uur:min:sec)</h1>
+<h1>All Timezones with Current Time (HH:MM:SS)</h1>
 
 <table>
   <thead>
-    <tr><th>Tijdzone</th><th>Huidige Tijd (uur:min:sec)</th></tr>
+    <tr><th>Timezone</th><th>Current Time (HH:MM:SS)</th></tr>
   </thead>
   <tbody id="tz-table-body"></tbody>
 </table>
 
-<h1>Jouw Lokale Tijd (7-Segment Klok)</h1>
+<h1>Your Local Time (7-Segment Clock)</h1>
 <div id="local-clock"></div>
 
 <script>
-// Segmenten per cijfer (0-9): a,b,c,d,e,f,g (0-6)
+// Segment mapping for digits 0-9: a,b,c,d,e,f,g (0-6)
 const digitsSegments = [
   [1,1,1,1,1,1,0], //0
   [0,1,1,0,0,0,0], //1
@@ -197,14 +197,14 @@ function showLocalTime7Segment(date) {
   const m = date.getMinutes();
   const s = date.getSeconds();
 
-  // Cijfers opsplitsen
+  // Split digits
   const digits = [
     Math.floor(h / 10), h % 10,
     Math.floor(m / 10), m % 10,
     Math.floor(s / 10), s % 10
   ];
 
-  // Maak digits en voeg toe
+  // Create digits and add to clock
   const d1 = createDigit();
   setDigit(d1, digits[0]);
   clock.appendChild(d1);
@@ -213,9 +213,9 @@ function showLocalTime7Segment(date) {
   setDigit(d2, digits[1]);
   clock.appendChild(d2);
 
-  // Dubbele punt
+  // Colon
   const colon1 = createColon();
-  // Knipperpunt elke seconde (aan bij even seconde)
+  // Blink colon every second (on at even seconds)
   if (s % 2 === 0) colon1.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
   clock.appendChild(colon1);
 
@@ -227,7 +227,7 @@ function showLocalTime7Segment(date) {
   setDigit(d4, digits[3]);
   clock.appendChild(d4);
 
-  // Tweede dubbele punt tussen minuten en seconden
+  // Second colon between minutes and seconds
   const colon2 = createColon();
   if (s % 2 === 0) colon2.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
   clock.appendChild(colon2);
@@ -245,7 +245,7 @@ function getAllTimeZones() {
   if (Intl.supportedValuesOf) {
     return Intl.supportedValuesOf('timeZone');
   }
-  // fallback, klein lijstje
+  // fallback, small list
   return ['UTC', 'Europe/Amsterdam', 'America/New_York', 'Asia/Tokyo', 'Australia/Sydney'];
 }
 
