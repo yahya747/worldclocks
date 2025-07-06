@@ -3,137 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>World Timezones - Red 7 Segment</title>
+  <title>World Timezones</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #121212;
-      color: #eeeeee;
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #111;
+      color: white;
       text-align: center;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
     }
+
     h1 {
-      margin-bottom: 10px;
+      margin: 20px 0 10px;
     }
+
     input[type="text"] {
       padding: 10px;
-      width: 300px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 5px;
-      margin-bottom: 20px;
+      width: 80%;
+      max-width: 400px;
+      font-size: 1em;
+      margin: 20px auto;
+      display: block;
+      border-radius: 8px;
+      border: 2px solid #555;
+      background-color: black;
+      color: white;
     }
-    table {
-      margin: 0 auto;
-      border-collapse: collapse;
-      width: 95%;
-      max-width: 1000px;
-    }
-    th, td {
-      border: 1px solid #333;
+
+    #timezones {
+      max-height: 60vh;
+      overflow-y: auto;
       padding: 10px;
-      font-size: 1rem;
     }
-    th {
-      background-color: #333;
-    }
-    tbody tr:nth-child(odd) {
-      background-color: #1e1e1e;
-    }
-    .seven-seg {
+
+    .timezone {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.4rem;
-      color: #ff2a2a;
-      letter-spacing: 3px;
-      text-shadow:
-        0 0 5px #ff2a2a,
-        0 0 10px #ff2a2a,
-        0 0 15px #ff0000;
+      font-size: 1.5em;
+      margin: 10px 0;
+      color: red;
     }
-    #currentTime {
+
+    .label {
+      color: white;
+      font-weight: bold;
+    }
+
+    #current-time {
+      font-family: 'Share Tech Mono', monospace;
       margin-top: 30px;
-      font-size: 1.6rem;
-      font-family: 'Share Tech Mono', monospace;
-      color: #ff2a2a;
-      text-shadow:
-        0 0 8px #ff2a2a,
-        0 0 20px #ff2a2a,
-        0 0 30px #ff0000;
+      font-size: 1.2em;
+      color: white;
     }
   </style>
 </head>
 <body>
+  <h1>World Timezones</h1>
+  <input type="text" id="search" placeholder="Search for a country or timezone..." />
 
-<h1>World Timezones - Live Clock</h1>
+  <div id="timezones"></div>
+  <div id="current-time"></div>
 
-<input type="text" id="searchBox" placeholder="Search for a timezone... (e.g. Tokyo, Europe, America)" />
+  <script>
+    const timezones = Intl.supportedValuesOf('timeZone');
 
-<table>
-  <thead>
-    <tr>
-      <th>Timezone</th>
-      <th>Current Time</th>
-    </tr>
-  </thead>
-  <tbody id="timezonesTable"></tbody>
-</table>
+    const container = document.getElementById('timezones');
+    const currentTime = document.getElementById('current-time');
+    const search = document.getElementById('search');
 
-<div id="currentTime">Loading your local time...</div>
+    function updateTimes() {
+      const now = new Date();
+      currentTime.innerText = 'Your Current Time: ' + now.toLocaleTimeString();
 
-<script>
-  const timezones = Intl.supportedValuesOf('timeZone');
-  const tbody = document.getElementById('timezonesTable');
-  const currentTimeDiv = document.getElementById('currentTime');
-  const searchBox = document.getElementById('searchBox');
-  let filteredZones = [...timezones];
+      container.innerHTML = '';
+      timezones.forEach(zone => {
+        if (zone.toLowerCase().includes(search.value.toLowerCase())) {
+          const time = new Date().toLocaleTimeString("en-GB", { timeZone: zone });
+          const div = document.createElement('div');
+          div.className = 'timezone';
+          div.innerHTML = `<span class="label">${zone}</span>: ${time}`;
+          container.appendChild(div);
+        }
+      });
+    }
 
-  function formatTime(date, timeZone) {
-    return date.toLocaleTimeString('en-GB', {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZone: timeZone
-    });
-  }
-
-  function buildTable() {
-    tbody.innerHTML = '';
-    const now = new Date();
-    filteredZones.forEach(tz => {
-      const timeString = formatTime(now, tz);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${tz}</td>
-        <td class="seven-seg">${timeString}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function updateTimes() {
-    const now = new Date();
-    const rows = tbody.querySelectorAll('tr');
-    rows.forEach(row => {
-      const tz = row.children[0].textContent;
-      row.children[1].textContent = formatTime(now, tz);
-    });
-    currentTimeDiv.textContent = `Your Local Time: ${formatTime(now, Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
-  }
-
-  function filterTimezones() {
-    const query = searchBox.value.toLowerCase();
-    filteredZones = timezones.filter(tz => tz.toLowerCase().includes(query));
-    buildTable();
-  }
-
-  searchBox.addEventListener('input', filterTimezones);
-
-  buildTable();
-  setInterval(updateTimes, 1000);
-  updateTimes();
-</script>
-
+    search.addEventListener('input', updateTimes);
+    setInterval(updateTimes, 1000);
+    updateTimes();
+  </script>
 </body>
 </html>
+
