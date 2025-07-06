@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wereldklokken</title>
+  <title>World Clocks</title>
   <style>
+    @font-face {
+      font-family: 'Digital';
+      src: url('https://cdn.jsdelivr.net/gh/keshikan/Digital-7@master/digital-7.ttf') format('truetype');
+    }
+
     body {
       font-family: sans-serif;
       background-color: #111;
@@ -12,20 +17,38 @@
       text-align: center;
       padding-top: 50px;
     }
+
+    h1 {
+      font-family: sans-serif;
+      margin-bottom: 40px;
+    }
+
     .clock {
-      font-size: 2em;
-      margin: 20px;
+      font-size: 1.5em;
+      margin: 30px 0;
+    }
+
+    .time {
+      font-family: 'Digital', monospace;
+      font-size: 3em;
+      color: #0f0;
+      background: black;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 10px;
+      letter-spacing: 3px;
     }
   </style>
 </head>
 <body>
-  <h1>🌍 Wereldklokken</h1>
+  <h1>🌍 World Clocks</h1>
   
-  <div class="clock" id="nl">🇳🇱 Nederland: <span id="time-nl"></span></div>
-  <div class="clock" id="ny">🇺🇸 New York: <span id="time-ny"></span></div>
-  <div class="clock" id="tokyo">🇯🇵 Tokyo: <span id="time-tokyo"></span></div>
-  <div class="clock" id="sydney">🇦🇺 Sydney: <span id="time-sydney"></span></div>
-  <div class="clock" id="london">🇬🇧 Londen: <span id="time-london"></span></div>
+  <div class="clock">🇳🇱 Netherlands<br><span class="time" id="time-nl"></span></div>
+  <div class="clock">🇺🇸 New York<br><span class="time" id="time-ny"></span></div>
+  <div class="clock">🇯🇵 Tokyo<br><span class="time" id="time-tokyo"></span></div>
+  <div class="clock">🇦🇺 Sydney<br><span class="time" id="time-sydney"></span></div>
+  <div class="clock">🇬🇧 London<br><span class="time" id="time-london"></span></div>
 
   <script>
     function updateClocks() {
@@ -38,11 +61,12 @@
       };
 
       for (const [id, zone] of Object.entries(zones)) {
-        const time = new Date().toLocaleTimeString("nl-NL", {
+        const time = new Date().toLocaleTimeString("en-GB", {
           timeZone: zone,
           hour: "2-digit",
           minute: "2-digit",
-          second: "2-digit"
+          second: "2-digit",
+          hour12: false // ← DIT zorgt voor 24-uurs klok
         });
         document.getElementById("time-" + id).textContent = time;
       }
