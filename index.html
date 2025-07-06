@@ -3,141 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Real World Map with Timezones</title>
+<title>Static World Map</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: white;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    background-color: #111;
     margin: 0;
-    padding: 20px;
-  }
-  #map-container {
-    width: 900px;
-    max-width: 100%;
-    margin-right: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
   svg {
-    width: 100%;
+    width: 80vw;
     height: auto;
-    border: 2px solid #444;
-    border-radius: 8px;
-    background-color: #222;
-    cursor: pointer;
-  }
-  .country {
-    fill: #555;
+    fill: #666;
     stroke: #222;
     stroke-width: 0.3;
-    transition: fill 0.3s;
-  }
-  .country:hover, .country.active {
-    fill: #e63946;
-  }
-  #info {
-    min-width: 250px;
-    background: #222;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px #e63946;
-  }
-  #info h2 {
-    margin-top: 0;
-    font-size: 1.5em;
-  }
-  #info p {
-    font-size: 1.3em;
-    margin: 10px 0 0 0;
   }
 </style>
 </head>
 <body>
-
-<div id="map-container">
-  <svg viewBox="0 0 2000 1001" role="img" aria-label="World map" xmlns="http://www.w3.org/2000/svg">
-    <!-- Wereldkaart van Natural Earth, sterk vereenvoudigd voor demo -->
-
-    <!-- Nederland -->
-    <path id="NL" class="country" d="M1076 438l10-4 8 6-2 10-9 4-7-7 0-9z"/>
-    <!-- Verenigde Staten -->
-    <path id="US" class="country" d="M700 400l50-15 60 10 25 40-35 40-75 15-40-45 15-45z"/>
-    <!-- Japan -->
-    <path id="JP" class="country" d="M1600 430l15-10 12 12-8 15-17-10z"/>
-    <!-- Australië -->
-    <path id="AU" class="country" d="M1600 720l80-15 70 50-70 60-85-50 5-45z"/>
-    <!-- Verenigd Koninkrijk -->
-    <path id="GB" class="country" d="M1050 410l10-7 15 10-5 12-15 6-5-10 0-11z"/>
+  <!-- Wereldkaart SVG van Natural Earth, sterk vereenvoudigd -->
+  <svg viewBox="0 0 2000 1001" xmlns="http://www.w3.org/2000/svg" aria-label="Static world map" role="img">
+    <!-- Hier zijn wat paden van landen, dit is een klein fragment voor demo -->
+    <path d="M1076 438l10-4 8 6-2 10-9 4-7-7 0-9z"/>
+    <path d="M700 400l50-15 60 10 25 40-35 40-75 15-40-45 15-45z"/>
+    <path d="M1600 430l15-10 12 12-8 15-17-10z"/>
+    <path d="M1600 720l80-15 70 50-70 60-85-50 5-45z"/>
+    <path d="M1050 410l10-7 15 10-5 12-15 6-5-10 0-11z"/>
   </svg>
-</div>
-
-<div id="info">
-  <h2>Hover over a country</h2>
-  <p id="country-name">No country selected</p>
-  <p id="local-time"></p>
-</div>
-
-<script>
-  // Landcodes en timezone data
-  const countries = {
-    NL: { name: "Netherlands", timezone: "Europe/Amsterdam" },
-    US: { name: "United States", timezone: "America/New_York" },
-    JP: { name: "Japan", timezone: "Asia/Tokyo" },
-    AU: { name: "Australia", timezone: "Australia/Sydney" },
-    GB: { name: "United Kingdom", timezone: "Europe/London" }
-  };
-
-  const countryNameElem = document.getElementById("country-name");
-  const localTimeElem = document.getElementById("local-time");
-
-  function updateTime(tz) {
-    const now = new Date();
-    return now.toLocaleTimeString("en-GB", {
-      timeZone: tz,
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-  }
-
-  const countryElems = document.querySelectorAll(".country");
-  let hoverCountry = null;
-
-  countryElems.forEach(el => {
-    el.addEventListener("mouseenter", () => {
-      countryElems.forEach(c => c.classList.remove("active"));
-      el.classList.add("active");
-
-      hoverCountry = el.id;
-      const c = countries[hoverCountry];
-      if(c) {
-        countryNameElem.textContent = c.name;
-        localTimeElem.textContent = updateTime(c.timezone);
-      }
-    });
-
-    el.addEventListener("mouseleave", () => {
-      el.classList.remove("active");
-      hoverCountry = null;
-      countryNameElem.textContent = "No country selected";
-      localTimeElem.textContent = "";
-    });
-  });
-
-  setInterval(() => {
-    if(hoverCountry) {
-      const c = countries[hoverCountry];
-      if(c) {
-        localTimeElem.textContent = updateTime(c.timezone);
-      }
-    }
-  }, 1000);
-</script>
-
 </body>
 </html>
