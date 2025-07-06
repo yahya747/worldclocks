@@ -1,65 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>World Timezones with 7-Segment Style</title>
-<style>
-  body {
-    background-color: #121212;
-    color: #eeeeee;
-    font-family: 'Courier New', Courier, monospace;
-    text-align: center;
-    margin: 20px;
-  }
-  h1 {
-    margin-bottom: 20px;
-  }
-  table {
-    margin: 0 auto;
-    border-collapse: collapse;
-    width: 90%;
-    max-width: 900px;
-  }
-  th, td {
-    border: 1px solid #444;
-    padding: 12px 10px;
-    font-size: 1.1rem;
-  }
-  th {
-    background-color: #333;
-  }
-  tbody tr:nth-child(odd) {
-    background-color: #222;
-  }
-  /* 7-segment style for time cells */
-  .seven-seg {
-    font-family: 'Digital-7', monospace;
-    font-weight: bold;
-    font-size: 1.4rem;
-    letter-spacing: 3px;
-    color: #0ff;
-    text-shadow:
-      0 0 8px #0ff,
-      0 0 20px #0ff,
-      0 0 30px #0ff,
-      0 0 40px #0ff;
-  }
-  #currentTime {
-    margin-top: 30px;
-    font-size: 1.6rem;
-    font-family: 'Digital-7', monospace;
-    color: #0f0;
-    text-shadow:
-      0 0 8px #0f0,
-      0 0 20px #0f0,
-      0 0 30px #0f0;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>World Timezones - Red 7 Segment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: #eeeeee;
+      font-family: 'Share Tech Mono', monospace;
+      text-align: center;
+      margin: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 95%;
+      max-width: 1000px;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    th {
+      background-color: #333;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: #1e1e1e;
+    }
+    .seven-seg {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem;
+      color: #ff2a2a;
+      letter-spacing: 3px;
+      text-shadow:
+        0 0 5px #ff2a2a,
+        0 0 10px #ff2a2a,
+        0 0 15px #ff0000;
+    }
+    #currentTime {
+      margin-top: 30px;
+      font-size: 1.6rem;
+      font-family: 'Share Tech Mono', monospace;
+      color: #ff2a2a;
+      text-shadow:
+        0 0 8px #ff2a2a,
+        0 0 20px #ff2a2a,
+        0 0 30px #ff0000;
+    }
+  </style>
 </head>
 <body>
 
-<h1>World Timezones - Current Time</h1>
+<h1>World Timezones - Live Clock</h1>
 
 <table>
   <thead>
@@ -68,21 +66,16 @@
       <th>Current Time</th>
     </tr>
   </thead>
-  <tbody id="timezonesTable">
-    <!-- Rows will be inserted here by JS -->
-  </tbody>
+  <tbody id="timezonesTable"></tbody>
 </table>
 
 <div id="currentTime">Loading your local time...</div>
 
 <script>
-  // List of all IANA timezones
   const timezones = Intl.supportedValuesOf('timeZone');
-
   const tbody = document.getElementById('timezonesTable');
   const currentTimeDiv = document.getElementById('currentTime');
 
-  // Format time as HH:MM:SS with leading zeros, no AM/PM, no timezone abbrev
   function formatTime(date, timeZone) {
     return date.toLocaleTimeString('en-GB', {
       hour12: false,
@@ -93,12 +86,9 @@
     });
   }
 
-  // Build the table rows for all timezones
   function buildTable() {
-    tbody.innerHTML = ''; // clear existing
-
+    tbody.innerHTML = '';
     const now = new Date();
-
     timezones.forEach(tz => {
       const timeString = formatTime(now, tz);
       const tr = document.createElement('tr');
@@ -110,7 +100,6 @@
     });
   }
 
-  // Update the times every second
   function updateTimes() {
     const now = new Date();
     const rows = tbody.querySelectorAll('tr');
@@ -118,17 +107,11 @@
       const tz = row.children[0].textContent;
       row.children[1].textContent = formatTime(now, tz);
     });
-    // Also update local time at bottom
     currentTimeDiv.textContent = `Your Local Time: ${formatTime(now, Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
   }
 
-  // Initial build
   buildTable();
-
-  // Update every second
   setInterval(updateTimes, 1000);
-
-  // Update local time immediately
   updateTimes();
 </script>
 
