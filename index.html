@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Map of Europe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Europe Map (Realistic)</title>
   <style>
     body {
       margin: 0;
-      background-color: #111;
+      background: #111;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -18,27 +18,28 @@
       height: auto;
       fill: #666;
       stroke: #222;
-      stroke-width: 0.3;
+      stroke-width: 0.4;
     }
   </style>
 </head>
 <body>
 
-<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Europe">
-  <!-- Nederland -->
-  <path d="M350,200 L355,195 L360,200 L360,205 L355,210 L350,205 Z" />
-  <!-- Duitsland -->
-  <path d="M365,205 L375,200 L380,210 L375,220 L365,215 Z" />
+<!-- SVG-kaart van Europa (geselecteerde landen) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" aria-label="Europe map">
   <!-- Frankrijk -->
-  <path d="M350,215 L360,220 L355,230 L345,225 Z" />
+  <path d="M400,600 L430,580 L450,590 L460,610 L440,630 L410,620 Z" />
+  <!-- Duitsland -->
+  <path d="M460,570 L480,560 L500,570 L500,590 L480,600 L460,590 Z" />
+  <!-- Nederland -->
+  <path d="M450,550 L455,545 L460,550 L455,555 Z" />
   <!-- België -->
-  <path d="M355,210 L360,208 L362,212 L357,215 Z" />
+  <path d="M445,560 L450,555 L455,560 L450,565 Z" />
   <!-- Spanje -->
-  <path d="M330,250 L350,255 L345,270 L325,265 Z" />
+  <path d="M370,670 L400,660 L410,690 L390,710 L360,700 Z" />
   <!-- Italië -->
-  <path d="M385,240 L395,245 L390,260 L380,255 Z" />
+  <path d="M510,620 L530,630 L520,660 L500,650 Z" />
   <!-- Verenigd Koninkrijk -->
-  <path d="M340,180 L345,175 L350,180 L345,185 Z" />
+  <path d="M420,520 L430,510 L440,520 L430,530 Z" />
 </svg>
 
 </body>
