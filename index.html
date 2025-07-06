@@ -1,41 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Schematische Kaart van Nederland</title>
-  <style>
-    body {
-      background: #111;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    svg {
-      width: 300px;
-      fill: #666;
-      stroke: #222;
-      stroke-width: 0.5;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Landen en hun tijden - 7 Segment Klok</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #222;
+    color: #eee;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 40px;
+  }
+
+  .land {
+    margin-bottom: 40px;
+  }
+
+  .landnaam {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .klok {
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  /* Container voor elk cijfer */
+  .cijfer {
+    position: relative;
+    width: 40px;
+    height: 70px;
+  }
+
+  /* De 7 segmenten */
+  .segment {
+    position: absolute;
+    background-color: #222;
+    transition: background-color 0.2s;
+  }
+
+  /* Segmenten vormen */
+  .segment.a { top: 0; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
+  .segment.b { top: 5px; right: 0; width: 8px; height: 28px; border-radius: 4px; }
+  .segment.c { bottom: 5px; right: 0; width: 8px; height: 28px; border-radius: 4px; }
+  .segment.d { bottom: 0; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
+  .segment.e { bottom: 5px; left: 0; width: 8px; height: 28px; border-radius: 4px; }
+  .segment.f { top: 5px; left: 0; width: 8px; height: 28px; border-radius: 4px; }
+  .segment.g { top: 31px; left: 5px; width: 30px; height: 8px; border-radius: 4px; }
+
+  /* AAN: fel rood */
+  .aan {
+    background-color: red;
+    box-shadow: 0 0 10px red;
+  }
+
+  /* Dubbele punt tussen uren en minuten */
+  .dubbelpunt {
+    width: 10px;
+    height: 70px;
+    position: relative;
+  }
+
+  .dubbelpunt span {
+    position: absolute;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    animation: knipperen 1s infinite;
+  }
+
+  .dubbelpunt span.top {
+    top: 20px;
+  }
+
+  .dubbelpunt span.bottom {
+    bottom: 20px;
+  }
+
+  @keyframes knipperen {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+  }
+</style>
 </head>
 <body>
 
-<!-- Eenvoudige, herkenbare vorm van Nederland -->
-<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg" aria-label="Nederland">
-  <path d="
-    M 100 30
-    C 85 35, 80 60, 75 90
-    C 70 120, 65 150, 70 180
-    C 75 210, 90 240, 110 250
-    C 130 260, 150 245, 150 230
-    C 150 210, 130 190, 125 170
-    C 120 150, 130 130, 140 110
-    C 145 100, 145 90, 140 80
-    C 130 60, 120 40, 100 30
-    Z" />
-</svg>
+<h1>Landen en hun tijden (7-segment stijl)</h1>
+
+<div id="landenContainer"></div>
+
+<script>
+  const landen = [
+    { naam: "Nederland", tijdzone: "Europe/Amsterdam" },
+    { naam: "Verenigde Staten (New York)", tijdzone: "America/New_York" },
+    { naam: "Japan", tijdzone: "Asia/Tokyo" },
+    { naam: "Australië (Sydney)", tijdzone: "Australia/Sydney" },
+    { naam: "Brazilië (Rio de Janeiro)", tijdzone: "America/Sao_Paulo" },
+    { naam: "Zuid-Afrika", tijdzone: "Africa/Johannesburg" }
+  ];
+
+  // 7-segment codes per cijfer: welke segmenten aan (a-g)
+  const segmentenPerCijfer = {
+    '0': ['a','b','c','d','e','f'],
+    '1': ['b','c'],
+    '2': ['a','b','g','e','d'],
+    '3': ['a','b','g','c','d'],
+    '4': ['f','g','b','c'],
+    '5': ['a','f','g','c','d'],
+    '6': ['a','f','g','e','c','d'],
+    '7': ['a','b','c'],
+    '8': ['a','b','c','d','e','f','g'],
+    '9': ['a','b','c','d','f','g']
+  };
+
+  function maakCijfer(num) {
+    const div = document.createElement('div');
+    div.classList.add('cijfer');
+
+    // Maak de 7 segment divs
+    ['a','b','c','d','e','f','g'].forEach(s => {
+      const seg = document.createElement('div');
+      seg.classList.add('segment', s);
+      if (segmentenPerCijfer[num].includes(s)) {
+        seg.classList.add('aan');
+      }
+      div.appendChild(seg);
+    });
+    return div;
+  }
+
+  function maakDubbelPunt() {
+    const dp = document.createElement('div');
+    dp.classList.add('dubbelpunt');
+    const top = document.createElement('span');
+    top.classList.add('top');
+    const bottom = document.createElement('span');
+    bottom.classList.add('bottom');
+    dp.appendChild(top);
+    dp.appendChild(bottom);
+    return dp;
+  }
+
+  function updateTijden() {
+    const container = document.getElementById('landenContainer');
+    container.innerHTML = '';
+
+    landen.forEach(land => {
+      // Haal tijd op voor tijdzone
+      const opties = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: land.tijdzone
+      };
+      const tijdFormatter = new Intl.DateTimeFormat('nl-NL', opties);
+      const tijdString = tijdFormatter.format(new Date()); // bv "21:05:09"
+
+      // Maak element voor land en tijd
+      const landDiv = document.createElement('div');
+      landDiv.classList.add('land');
+
+      const naamDiv = document.createElement('div');
+      naamDiv.classList.add('landnaam');
+      naamDiv.textContent = land.naam;
+      landDiv.appendChild(naamDiv);
+
+      const klokDiv = document.createElement('div');
+      klokDiv.classList.add('klok');
+
+      // Tijd string is "HH:MM:SS"
+      // We maken per cijfer een 7-segment cijfer en plaatsen dubbele punten
+      for (let i = 0; i < tijdString.length; i++) {
+        const char = tijdString[i];
+        if (char === ':') {
+          klokDiv.appendChild(maakDubbelPunt());
+        } else {
+          klokDiv.appendChild(maakCijfer(char));
+        }
+      }
+
+      landDiv.appendChild(klokDiv);
+      container.appendChild(landDiv);
+    });
+  }
+
+  updateTijden();
+  setInterval(updateTijden, 1000);
+</script>
 
 </body>
 </html>
