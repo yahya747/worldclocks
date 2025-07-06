@@ -3,142 +3,160 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Alle Tijdzones + 7-Segment Klok</title>
+<title>Alle Tijdzones met 7-Segment Klok + Seconden</title>
 <style>
   body {
-    font-family: monospace;
-    background: #000;
-    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    background: #121217;
+    color: #00ff88;
+    margin: 0;
     padding: 20px;
+    user-select: none;
   }
   h1 {
     text-align: center;
+    margin-bottom: 0.3em;
+    text-shadow: 0 0 8px #00ff88;
   }
   table {
     width: 100%;
     max-width: 900px;
-    margin: 20px auto;
+    margin: 20px auto 50px auto;
     border-collapse: collapse;
+    box-shadow: 0 0 12px #00ff88aa;
+    background: #1e1e28;
+    border-radius: 8px;
+    overflow: hidden;
   }
   th, td {
-    border: 1px solid #0f0;
-    padding: 6px 10px;
-    font-size: 0.85rem;
+    border-bottom: 1px solid #00ff88aa;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    text-align: center;
   }
   th {
-    background: #022;
+    background: #002211;
+    font-weight: 600;
+    letter-spacing: 0.05em;
   }
-  tbody tr:nth-child(odd) {
-    background: #001100;
+  tbody tr:hover {
+    background: #00442288;
   }
   tbody tr:nth-child(even) {
-    background: #002200;
+    background: #002b1f;
   }
+  
   /* 7-segment container */
   #local-clock {
     display: flex;
     justify-content: center;
-    margin: 40px auto;
+    margin: 0 auto 60px auto;
     width: fit-content;
-    gap: 12px;
+    gap: 14px;
   }
-  /* Elke cijfer (digit) container */
+  
+  /* Digit styling */
   .digit {
     position: relative;
-    width: 40px;
-    height: 80px;
+    width: 50px;
+    height: 100px;
+    filter: drop-shadow(0 0 4px #00ff88);
   }
-  /* Segment stijl */
+  
+  /* Segment style */
   .segment {
     position: absolute;
-    background: #022;
-    border-radius: 6px;
-    transition: background 0.3s;
+    background: #003322;
+    border-radius: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: inset 0 0 10px #004433;
   }
   .segment.on {
-    background: #0f0;
-    box-shadow: 0 0 10px #0f0;
+    background: #00ff88;
+    box-shadow:
+      0 0 8px #00ff88,
+      inset 0 0 20px #00ff88aa;
   }
-  /* Segment posities */
+  /* Segment positions and sizes */
   .a {
-    top: 0; left: 5px; right: 5px; height: 10px;
+    top: 0; left: 8px; right: 8px; height: 14px;
   }
   .b {
-    top: 5px; right: 0; width: 10px; height: 30px;
+    top: 8px; right: 0; width: 14px; height: 40px;
   }
   .c {
-    bottom: 5px; right: 0; width: 10px; height: 30px;
+    bottom: 8px; right: 0; width: 14px; height: 40px;
   }
   .d {
-    bottom: 0; left: 5px; right: 5px; height: 10px;
+    bottom: 0; left: 8px; right: 8px; height: 14px;
   }
   .e {
-    bottom: 5px; left: 0; width: 10px; height: 30px;
+    bottom: 8px; left: 0; width: 14px; height: 40px;
   }
   .f {
-    top: 5px; left: 0; width: 10px; height: 30px;
+    top: 8px; left: 0; width: 14px; height: 40px;
   }
   .g {
-    top: 35px; left: 5px; right: 5px; height: 10px;
+    top: 43px; left: 8px; right: 8px; height: 14px;
   }
-  /* Dubbele punt */
+  
+  /* Colon styling */
   #colon {
     position: relative;
-    width: 20px;
-    height: 80px;
+    width: 24px;
+    height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 20px;
+    gap: 28px;
+    filter: drop-shadow(0 0 5px #00ff88);
   }
   #colon .dot {
-    width: 12px;
-    height: 12px;
-    background: #022;
+    width: 16px;
+    height: 16px;
+    background: #003322;
     border-radius: 50%;
-    box-shadow: none;
-    transition: background 0.3s;
+    box-shadow: inset 0 0 8px #004433;
+    transition: background 0.3s, box-shadow 0.3s;
   }
   #colon .dot.on {
-    background: #0f0;
-    box-shadow: 0 0 10px #0f0;
+    background: #00ff88;
+    box-shadow:
+      0 0 15px #00ff88,
+      inset 0 0 20px #00ff88bb;
   }
+  
 </style>
 </head>
 <body>
 
-<h1>Alle Tijdzones met Huidige Tijd</h1>
+<h1>Alle Tijdzones met Huidige Tijd (uur:min:sec)</h1>
 
 <table>
   <thead>
-    <tr><th>Tijdzone</th><th>Huidige Tijd (uur:minuut)</th></tr>
+    <tr><th>Tijdzone</th><th>Huidige Tijd (uur:min:sec)</th></tr>
   </thead>
   <tbody id="tz-table-body"></tbody>
 </table>
 
 <h1>Jouw Lokale Tijd (7-Segment Klok)</h1>
-<div id="local-clock">
-  <!-- Hier komen de cijfers en dubbele punt -->
-</div>
+<div id="local-clock"></div>
 
 <script>
-// 7 segment digit bits:
-// a,b,c,d,e,f,g (in volgorde 0-6)  
-// Segmenten per cijfer (0-9):
+// Segmenten per cijfer (0-9): a,b,c,d,e,f,g (0-6)
 const digitsSegments = [
-  [1,1,1,1,1,1,0], // 0
-  [0,1,1,0,0,0,0], // 1
-  [1,1,0,1,1,0,1], // 2
-  [1,1,1,1,0,0,1], // 3
-  [0,1,1,0,0,1,1], // 4
-  [1,0,1,1,0,1,1], // 5
-  [1,0,1,1,1,1,1], // 6
-  [1,1,1,0,0,0,0], // 7
-  [1,1,1,1,1,1,1], // 8
-  [1,1,1,1,0,1,1]  // 9
+  [1,1,1,1,1,1,0], //0
+  [0,1,1,0,0,0,0], //1
+  [1,1,0,1,1,0,1], //2
+  [1,1,1,1,0,0,1], //3
+  [0,1,1,0,0,1,1], //4
+  [1,0,1,1,0,1,1], //5
+  [1,0,1,1,1,1,1], //6
+  [1,1,1,0,0,0,0], //7
+  [1,1,1,1,1,1,1], //8
+  [1,1,1,1,0,1,1]  //9
 ];
 
-// Maak een digit element
 function createDigit() {
   const d = document.createElement('div');
   d.classList.add('digit');
@@ -150,7 +168,6 @@ function createDigit() {
   return d;
 }
 
-// Zet een cijfer aan/uit
 function setDigit(digitElement, num) {
   const segs = digitsSegments[num];
   const segElements = digitElement.querySelectorAll('.segment');
@@ -160,7 +177,6 @@ function setDigit(digitElement, num) {
   });
 }
 
-// Maak dubbele punt element
 function createColon() {
   const colon = document.createElement('div');
   colon.id = 'colon';
@@ -173,21 +189,22 @@ function createColon() {
   return colon;
 }
 
-// Toon tijd in 7 segment weergave
 function showLocalTime7Segment(date) {
   const clock = document.getElementById('local-clock');
-  clock.innerHTML = ''; // leegmaken
+  clock.innerHTML = '';
 
   const h = date.getHours();
   const m = date.getMinutes();
+  const s = date.getSeconds();
 
   // Cijfers opsplitsen
   const digits = [
     Math.floor(h / 10), h % 10,
-    Math.floor(m / 10), m % 10
+    Math.floor(m / 10), m % 10,
+    Math.floor(s / 10), s % 10
   ];
 
-  // Maak en voeg digits toe
+  // Maak digits en voeg toe
   const d1 = createDigit();
   setDigit(d1, digits[0]);
   clock.appendChild(d1);
@@ -197,12 +214,10 @@ function showLocalTime7Segment(date) {
   clock.appendChild(d2);
 
   // Dubbele punt
-  const colon = createColon();
-  // Knipper dubbele punt elke seconde
-  if (date.getSeconds() % 2 === 0) {
-    colon.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
-  }
-  clock.appendChild(colon);
+  const colon1 = createColon();
+  // Knipperpunt elke seconde (aan bij even seconde)
+  if (s % 2 === 0) colon1.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
+  clock.appendChild(colon1);
 
   const d3 = createDigit();
   setDigit(d3, digits[2]);
@@ -211,34 +226,43 @@ function showLocalTime7Segment(date) {
   const d4 = createDigit();
   setDigit(d4, digits[3]);
   clock.appendChild(d4);
+
+  // Tweede dubbele punt tussen minuten en seconden
+  const colon2 = createColon();
+  if (s % 2 === 0) colon2.querySelectorAll('.dot').forEach(dot => dot.classList.add('on'));
+  clock.appendChild(colon2);
+
+  const d5 = createDigit();
+  setDigit(d5, digits[4]);
+  clock.appendChild(d5);
+
+  const d6 = createDigit();
+  setDigit(d6, digits[5]);
+  clock.appendChild(d6);
 }
 
-// Haal alle tijdzones (IANA)
 function getAllTimeZones() {
   if (Intl.supportedValuesOf) {
     return Intl.supportedValuesOf('timeZone');
   }
-  // fallback
-  return [
-    'UTC', 'Europe/Amsterdam', 'America/New_York', 'Asia/Tokyo', 'Australia/Sydney'
-  ];
+  // fallback, klein lijstje
+  return ['UTC', 'Europe/Amsterdam', 'America/New_York', 'Asia/Tokyo', 'Australia/Sydney'];
 }
 
-// Format tijd als "hh:mm"
 function formatTime(date) {
   let h = date.getHours();
   let m = date.getMinutes();
+  let s = date.getSeconds();
   if (h < 10) h = '0' + h;
   if (m < 10) m = '0' + m;
-  return `${h}:${m}`;
+  if (s < 10) s = '0' + s;
+  return `${h}:${m}:${s}`;
 }
 
-// Krijg tijd in specifieke tijdzone
 function getTimeInZone(timeZone) {
   return new Date(new Date().toLocaleString('en-US', { timeZone }));
 }
 
-// Toon alle tijdzones en tijden in tabel
 function showTimeZones() {
   const tbody = document.getElementById('tz-table-body');
   tbody.innerHTML = '';
@@ -253,7 +277,6 @@ function showTimeZones() {
   });
 }
 
-// Update alles elke seconde
 function update() {
   showTimeZones();
   showLocalTime7Segment(new Date());
@@ -261,7 +284,6 @@ function update() {
 
 setInterval(update, 1000);
 update();
-
 </script>
 
 </body>
