@@ -14,6 +14,14 @@
       margin: 20px;
     }
     h1 {
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
       margin-bottom: 20px;
     }
     table {
@@ -59,6 +67,8 @@
 
 <h1>World Timezones - Live Clock</h1>
 
+<input type="text" id="searchBox" placeholder="Search for a timezone... (e.g. Tokyo, Europe, America)" />
+
 <table>
   <thead>
     <tr>
@@ -75,6 +85,8 @@
   const timezones = Intl.supportedValuesOf('timeZone');
   const tbody = document.getElementById('timezonesTable');
   const currentTimeDiv = document.getElementById('currentTime');
+  const searchBox = document.getElementById('searchBox');
+  let filteredZones = [...timezones];
 
   function formatTime(date, timeZone) {
     return date.toLocaleTimeString('en-GB', {
@@ -89,7 +101,7 @@
   function buildTable() {
     tbody.innerHTML = '';
     const now = new Date();
-    timezones.forEach(tz => {
+    filteredZones.forEach(tz => {
       const timeString = formatTime(now, tz);
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -109,6 +121,14 @@
     });
     currentTimeDiv.textContent = `Your Local Time: ${formatTime(now, Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
   }
+
+  function filterTimezones() {
+    const query = searchBox.value.toLowerCase();
+    filteredZones = timezones.filter(tz => tz.toLowerCase().includes(query));
+    buildTable();
+  }
+
+  searchBox.addEventListener('input', filterTimezones);
 
   buildTable();
   setInterval(updateTimes, 1000);
