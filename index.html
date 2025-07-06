@@ -1,85 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>World Clocks - Red 7-Segment</title>
-  <style>
-    @font-face {
-      font-family: 'Digital-7Mono';
-      src: url('https://cdn.jsdelivr.net/gh/keshikan/Digital-7@master/digital-7mono.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    body {
-      font-family: sans-serif;
-      background-color: #111;
-      color: white;
-      text-align: center;
-      padding-top: 50px;
-    }
-
-    h1 {
-      font-family: sans-serif;
-      margin-bottom: 40px;
-    }
-
-    .clock {
-      font-size: 1.5em;
-      margin: 30px 0;
-    }
-
-    .time {
-      font-family: 'Digital-7Mono', monospace;
-      font-size: 4em;
-      color: #FF0000; /* Classic red LED color */
-      background: #220000; /* Dark red background for glow effect */
-      padding: 10px 25px;
-      border-radius: 15px;
-      display: inline-block;
-      margin-top: 10px;
-      letter-spacing: 8px;
-      text-shadow:
-        0 0 8px #FF0000,
-        0 0 15px #FF0000,
-        0 0 20px #FF6347;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>7 Segment World Clocks</title>
+<style>
+  body {
+    background-color: #111;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    padding-top: 40px;
+  }
+  h1 {
+    margin-bottom: 40px;
+  }
+  .clock-container {
+    display: inline-block;
+    margin: 20px;
+  }
+  .label {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+  .seven-seg {
+    display: flex;
+  }
+  .digit {
+    position: relative;
+    width: 40px;
+    height: 70px;
+    margin: 0 5px;
+  }
+  /* Segment common style */
+  .segment {
+    position: absolute;
+    background-color: #800000; /* dark red */
+    transition: background-color 0.2s;
+  }
+  .segment.on {
+    background-color: red; /* bright red */
+  }
+  /* Each segment position */
+  .a {
+    top: 0;
+    left: 7px;
+    width: 26px;
+    height: 8px;
+    border-radius: 4px;
+  }
+  .b {
+    top: 7px;
+    right: 0;
+    width: 8px;
+    height: 26px;
+    border-radius: 4px;
+  }
+  .c {
+    bottom: 7px;
+    right: 0;
+    width: 8px;
+    height: 26px;
+    border-radius: 4px;
+  }
+  .d {
+    bottom: 0;
+    left: 7px;
+    width: 26px;
+    height: 8px;
+    border-radius: 4px;
+  }
+  .e {
+    bottom: 7px;
+    left: 0;
+    width: 8px;
+    height: 26px;
+    border-radius: 4px;
+  }
+  .f {
+    top: 7px;
+    left: 0;
+    width: 8px;
+    height: 26px;
+    border-radius: 4px;
+  }
+  .g {
+    top: 31px;
+    left: 7px;
+    width: 26px;
+    height: 8px;
+    border-radius: 4px;
+  }
+  /* Colon */
+  .colon {
+    width: 20px;
+    height: 70px;
+    margin: 0 5px;
+    position: relative;
+  }
+  .colon-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .colon-dot.top {
+    top: 20px;
+  }
+  .colon-dot.bottom {
+    bottom: 20px;
+  }
+</style>
 </head>
 <body>
-  <h1>🌍 World Clocks</h1>
-  
-  <div class="clock">🇳🇱 Netherlands<br><span class="time" id="time-nl"></span></div>
-  <div class="clock">🇺🇸 New York<br><span class="time" id="time-ny"></span></div>
-  <div class="clock">🇯🇵 Tokyo<br><span class="time" id="time-tokyo"></span></div>
-  <div class="clock">🇦🇺 Sydney<br><span class="time" id="time-sydney"></span></div>
-  <div class="clock">🇬🇧 London<br><span class="time" id="time-london"></span></div>
+  <h1>🌍 7-Segment World Clocks</h1>
 
-  <script>
-    function updateClocks() {
-      const zones = {
-        "nl": "Europe/Amsterdam",
-        "ny": "America/New_York",
-        "tokyo": "Asia/Tokyo",
-        "sydney": "Australia/Sydney",
-        "london": "Europe/London"
-      };
+  <div class="clock-container" id="clock-nl">
+    <div class="label">🇳🇱 Netherlands</div>
+    <div class="seven-seg"></div>
+  </div>
 
-      for (const [id, zone] of Object.entries(zones)) {
-        const time = new Date().toLocaleTimeString("en-GB", {
-          timeZone: zone,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false
-        });
-        document.getElementById("time-" + id).textContent = time;
+  <div class="clock-container" id="clock-ny">
+    <div class="label">🇺🇸 New York</div>
+    <div class="seven-seg"></div>
+  </div>
+
+  <div class="clock-container" id="clock-tokyo">
+    <div class="label">🇯🇵 Tokyo</div>
+    <div class="seven-seg"></div>
+  </div>
+
+  <div class="clock-container" id="clock-sydney">
+    <div class="label">🇦🇺 Sydney</div>
+    <div class="seven-seg"></div>
+  </div>
+
+  <div class="clock-container" id="clock-london">
+    <div class="label">🇬🇧 London</div>
+    <div class="seven-seg"></div>
+  </div>
+
+<script>
+  // Segment mapping for digits 0-9
+  // Order: a,b,c,d,e,f,g segments on or off
+  const digitMap = {
+    "0": [1,1,1,1,1,1,0],
+    "1": [0,1,1,0,0,0,0],
+    "2": [1,1,0,1,1,0,1],
+    "3": [1,1,1,1,0,0,1],
+    "4": [0,1,1,0,0,1,1],
+    "5": [1,0,1,1,0,1,1],
+    "6": [1,0,1,1,1,1,1],
+    "7": [1,1,1,0,0,0,0],
+    "8": [1,1,1,1,1,1,1],
+    "9": [1,1,1,1,0,1,1],
+  };
+
+  // Create digit HTML element with 7 segments
+  function createDigit() {
+    const digit = document.createElement("div");
+    digit.className = "digit";
+
+    ["a","b","c","d","e","f","g"].forEach(seg => {
+      const segment = document.createElement("div");
+      segment.className = "segment " + seg;
+      digit.appendChild(segment);
+    });
+
+    return digit;
+  }
+
+  // Create colon element
+  function createColon() {
+    const colon = document.createElement("div");
+    colon.className = "colon";
+    const dotTop = document.createElement("div");
+    dotTop.className = "colon-dot top";
+    const dotBottom = document.createElement("div");
+    dotBottom.className = "colon-dot bottom";
+    colon.appendChild(dotTop);
+    colon.appendChild(dotBottom);
+    return colon;
+  }
+
+  // Render a digit inside a seven-seg container, turning on/off segments
+  function renderDigit(container, number) {
+    const segments = container.querySelectorAll(".segment");
+    const onOff = digitMap[number];
+    onOff.forEach((on, idx) => {
+      if(on) {
+        segments[idx].classList.add("on");
+      } else {
+        segments[idx].classList.remove("on");
+      }
+    });
+  }
+
+  // Build a time string (HH:MM:SS) as digits and colons
+  // For each clock container
+  function buildClock(container, timeStr) {
+    const segContainer = container.querySelector(".seven-seg");
+    segContainer.innerHTML = ""; // clear previous
+
+    for(let i=0; i<timeStr.length; i++) {
+      const ch = timeStr.charAt(i);
+      if(ch === ":") {
+        segContainer.appendChild(createColon());
+      } else {
+        const digit = createDigit();
+        segContainer.appendChild(digit);
+        renderDigit(digit, ch);
       }
     }
+  }
 
-    setInterval(updateClocks, 1000);
-    updateClocks();
-  </script>
+  function updateAllClocks() {
+    const clocks = {
+      "clock-nl": "Europe/Amsterdam",
+      "clock-ny": "America/New_York",
+      "clock-tokyo": "Asia/Tokyo",
+      "clock-sydney": "Australia/Sydney",
+      "clock-london": "Europe/London"
+    };
+
+    for(const [id, tz] of Object.entries(clocks)) {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("en-GB", {
+        timeZone: tz,
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+      const container = document.getElementById(id);
+      buildClock(container, timeStr);
+    }
+  }
+
+  setInterval(updateAllClocks, 1000);
+  updateAllClocks();
+</script>
 </body>
 </html>
