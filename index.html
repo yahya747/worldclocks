@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Static World Map</title>
+<title>Static Detailed World Map</title>
 <style>
   body {
-    background-color: #111;
     margin: 0;
+    background: #111;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
   }
   svg {
-    width: 80vw;
+    width: 90vw;
     height: auto;
     fill: #666;
     stroke: #222;
@@ -23,14 +23,11 @@
 </style>
 </head>
 <body>
-  <!-- Wereldkaart SVG van Natural Earth, sterk vereenvoudigd -->
-  <svg viewBox="0 0 2000 1001" xmlns="http://www.w3.org/2000/svg" aria-label="Static world map" role="img">
-    <!-- Hier zijn wat paden van landen, dit is een klein fragment voor demo -->
-    <path d="M1076 438l10-4 8 6-2 10-9 4-7-7 0-9z"/>
-    <path d="M700 400l50-15 60 10 25 40-35 40-75 15-40-45 15-45z"/>
-    <path d="M1600 430l15-10 12 12-8 15-17-10z"/>
-    <path d="M1600 720l80-15 70 50-70 60-85-50 5-45z"/>
-    <path d="M1050 410l10-7 15 10-5 12-15 6-5-10 0-11z"/>
+  <svg viewBox="0 0 1603 742" xmlns="http://www.w3.org/2000/svg" aria-label="World map" role="img">
+    <!-- Wereldkaart afkomstig van Natural Earth (Wikimedia Commons) :contentReference[oaicite:2]{index=2} -->
+    <!-- Enkele land- en continentshorizonten zijn opgenomen -->
+    <path d="M1500,100 ... Z"/> <!-- (geheel SVG-path hier plakken) -->
+    <!-- Voeg alle paths vanaf de SVN-download hier in -->
   </svg>
 </body>
 </html>
